@@ -3,6 +3,7 @@ pipeline {
     agent any
 
     environment {
+        PYTHON = 'C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe'
         IMAGE_NAME = "customer-portal:build-${BUILD_NUMBER}"
         CONTAINER_NAME = "customer-portal-${BUILD_NUMBER}"
         HOST_PORT = "5001"
@@ -30,7 +31,7 @@ pipeline {
             steps {
                 echo 'Building Python application'
 
-                bat 'python -m compileall app.py test_app.py'
+                bat "\"${PYTHON}\" -m compileall app.py test_app.py"
             }
         }
 
@@ -38,7 +39,7 @@ pipeline {
             steps {
                 echo 'Running automated tests'
 
-                bat 'python -m pytest -v'
+                bat "\"${PYTHON}\" -m pytest -v"
             }
         }
 
@@ -52,22 +53,19 @@ pipeline {
 
         stage('Container Verification') {
             steps {
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                echo "Starting temporary container: ${CONTAINER_NAME}"
 
-                    echo "Starting temporary container: ${CONTAINER_NAME}"
+                bat "docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}"
 
-                    bat "docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}"
+                echo 'Waiting for application to start'
 
-                    echo 'Waiting for application to start'
+                bat 'powershell -Command "Start-Sleep -Seconds 5"'
 
-                    bat 'powershell -Command "Start-Sleep -Seconds 5"'
+                echo 'Checking application health endpoint'
 
-                    echo 'Checking application health endpoint'
+                bat 'powershell -Command "Invoke-WebRequest -Uri http://localhost:%HOST_PORT%/health -UseBasicParsing"'
 
-                    bat 'powershell -Command "Invoke-WebRequest -Uri http://localhost:%HOST_PORT%/health -UseBasicParsing"'
-
-                    echo 'Container verification successful'
-                }
+                echo 'Container verification successful'
             }
         }
 
