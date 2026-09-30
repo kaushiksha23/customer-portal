@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON = 'C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe'
+        PYTHON = 'C:\\Program Files\\Python312\\python.exe'
         IMAGE_NAME = "customer-portal:build-${BUILD_NUMBER}"
         CONTAINER_NAME = "customer-portal-${BUILD_NUMBER}"
         HOST_PORT = "5001"
