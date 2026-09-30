@@ -20,7 +20,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/kaushiksha23/customer-portal.git',
+                        url: 'https://github.com/kaushikshanmugavel/customer-portal.git',
                         credentialsId: 'github-credentials'
                     ]]
                 ])
@@ -29,6 +29,10 @@ pipeline {
 
         stage('Build') {
             steps {
+                echo 'Installing Python dependencies'
+
+                bat "\"${PYTHON}\" -m pip install -r requirements.txt"
+
                 echo 'Building Python application'
 
                 bat "\"${PYTHON}\" -m compileall app.py test_app.py"
