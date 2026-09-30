@@ -20,7 +20,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/kaushikshanmugavel/customer-portal.git',
+                        url: 'https://github.com/kaushiksha23/customer-portal.git',
                         credentialsId: 'github-credentials'
                     ]]
                 ])
